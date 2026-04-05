@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "CoffeeToGo",
+    "slug": "coffeetogo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#6F4E37"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "vn.coffeetogo.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#6F4E37"
+      },
+      "package": "vn.coffeetogo.app"
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#6F4E37"
+        }
+      ]
+    ]
+  }
+}

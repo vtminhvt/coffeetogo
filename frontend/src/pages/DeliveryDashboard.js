@@ -1,17 +1,31 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { io } from 'socket.io-client';
 import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+
+const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || 'http://localhost:4000';
 
 export default function DeliveryDashboard() {
   const { user } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const socketRef = useRef(null);
 
   const fetchOrders = () => {
     api.get('/orders').then(r => setOrders(r.data)).finally(() => setLoading(false));
   };
 
-  useEffect(() => { fetchOrders(); const t = setInterval(fetchOrders, 15000); return () => clearInterval(t); }, []);
+  useEffect(() => {
+    fetchOrders();
+
+    socketRef.current = io(SOCKET_URL, { transports: ['websocket'] });
+    // Refresh list when any order becomes 'ready' or changes status
+    socketRef.current.on('order:status', ({ status }) => {
+      if (status === 'ready') fetchOrders();
+    });
+
+    return () => { socketRef.current?.disconnect(); };
+  }, []); // eslint-disable-line
 
   const fmt = (n) => n.toLocaleString('vi-VN') + 'đ';
 

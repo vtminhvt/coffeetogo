@@ -15,6 +15,7 @@ export function AuthProvider({ children }) {
       setUser(data);
     } catch {
       localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
     } finally {
       setLoading(false);
     }
@@ -25,6 +26,7 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password });
     localStorage.setItem('token', data.token);
+    localStorage.setItem('refreshToken', data.refreshToken);
     setUser(data.user);
     return data.user;
   };
@@ -32,12 +34,16 @@ export function AuthProvider({ children }) {
   const register = async (payload) => {
     const { data } = await api.post('/auth/register', payload);
     localStorage.setItem('token', data.token);
+    localStorage.setItem('refreshToken', data.refreshToken);
     setUser(data.user);
     return data.user;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    const refreshToken = localStorage.getItem('refreshToken');
+    try { await api.post('/auth/logout', { refreshToken }); } catch { /* ignore */ }
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     setUser(null);
   };
 
@@ -51,3 +57,4 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   return useContext(AuthContext);
 }
+
