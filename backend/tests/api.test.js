@@ -1,12 +1,11 @@
 // Set env FIRST, before any requires
-process.env.DB_PATH = ':memory:';
 process.env.NODE_ENV = 'test';
 
 const request = require('supertest');
 const app = require('../src/app');
-const { closeDb } = require('../src/config/database');
+const { closePool } = require('../src/config/database');
 
-afterAll(() => closeDb());
+afterAll(() => closePool());
 
 describe('Health', () => {
   it('GET /api/health returns ok', async () => {
@@ -25,6 +24,7 @@ describe('Auth', () => {
     const res = await request(app).post('/api/auth/register').send(customer);
     expect(res.status).toBe(201);
     expect(res.body.token).toBeTruthy();
+    expect(res.body.refreshToken).toBeTruthy();
     expect(res.body.user.role).toBe('customer');
   });
 
@@ -49,6 +49,7 @@ describe('Auth', () => {
     const res = await request(app).post('/api/auth/login').send({ email: customer.email, password: customer.password });
     expect(res.status).toBe(200);
     expect(res.body.token).toBeTruthy();
+    expect(res.body.refreshToken).toBeTruthy();
   });
 
   it('rejects wrong password', async () => {
@@ -62,6 +63,14 @@ describe('Auth', () => {
     const res = await request(app).get('/api/auth/me').set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(200);
     expect(res.body.email).toBe(customer.email);
+  });
+
+  it('refreshes an access token', async () => {
+    const loginRes = await request(app).post('/api/auth/login').send({ email: customer.email, password: customer.password });
+    const refreshToken = loginRes.body.refreshToken;
+    const res = await request(app).post('/api/auth/refresh').send({ refreshToken });
+    expect(res.status).toBe(200);
+    expect(res.body.token).toBeTruthy();
   });
 });
 
@@ -202,3 +211,4 @@ describe('Orders & Commission', () => {
     expect(res.body.summary.totalPaid).toBe(7000);
   });
 });
+
