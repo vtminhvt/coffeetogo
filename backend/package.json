@@ -1,0 +1,31 @@
+{
+  "name": "coffeetogo-backend",
+  "version": "1.0.0",
+  "description": "CoffeeToGo API — connects customers, coffee shops and delivery staff",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "NODE_ENV=test jest --runInBand --forceExit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.0",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.3.2",
+    "jsonwebtoken": "^9.0.3",
+    "mssql": "^11.0.1",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "better-sqlite3": "^12.8.0",
+    "jest": "^30.3.0",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.2.2"
+  }
+}
